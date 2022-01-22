@@ -12,6 +12,8 @@ django-stubs==1.9.0  # https://github.com/typeddjango/django-stubs
 pytest==6.2.5  # https://github.com/pytest-dev/pytest
 pytest-sugar==0.9.4  # https://github.com/Frozenball/pytest-sugar
 djangorestframework-stubs==1.4.0  # https://github.com/typeddjango/djangorestframework-stubs
+model_bakery==1.4.0
+freezegun==1.1.0
 
 # Documentation
 # ------------------------------------------------------------------------------

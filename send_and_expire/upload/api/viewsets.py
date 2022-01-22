@@ -31,13 +31,37 @@ class UploadViewSet(mixins.CreateModelMixin,
 
 class DownloadViewSet(mixins.RetrieveModelMixin,
                       GenericViewSet):
+    """
+    Download url.
+
+    Example:
+    http://localhost:8000/api/downloads/e0e99592-4ee2-4d63-bc1b-78c966d584d9/
+    """
     queryset = Upload.objects.all()
     serializer_class = DownloadSerializer
     lookup_field = 'download_url'
+    lookup_url_kwarg = 'download_url'
 
     def retrieve(self, request, *args, **kwargs):
         instance: Upload = self.get_object()
         instance.max_downloads -= 1
-        instance.save()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        if instance.max_downloads == -1:
+            instance.delete()
+            return Response(data={
+                'message': "File exceeds max_download and has been deleted."
+            }, status=status.HTTP_204_NO_CONTENT)
+        else:
+            instance.save()
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data)
+
+
+class DeleteViewSet(mixins.DestroyModelMixin, GenericViewSet):
+    """
+    Delete the instance using delete_url.
+
+    DELETE '/api/deletes/a11342e4-7a70-40fd-9197-d7b465cccce3/'
+    """
+    queryset = Upload.objects.all()
+    lookup_field = 'delete_url'
+    lookup_url_kwarg = 'delete_url'

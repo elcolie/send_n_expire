@@ -243,7 +243,7 @@ LOGGING = {
     "formatters": {
         "verbose": {
             "format": "%(levelname)s %(asctime)s %(module)s "
-            "%(process)d %(thread)d %(message)s"
+                      "%(process)d %(thread)d %(message)s"
         }
     },
     "handlers": {
@@ -325,4 +325,16 @@ SPECTACULAR_SETTINGS = {
 }
 # Your stuff...
 # ------------------------------------------------------------------------------
-UPLOAD_SIZE_LIMIT = 100 * 1024 * 1024   # 100 MB
+UPLOAD_SIZE_LIMIT = 100 * 1024 * 1024  # 100 MB
+
+# https://www.caktusgroup.com/blog/2021/08/11/using-celery-scheduling-tasks/
+CELERY_BEAT_SCHEDULE = {
+    # Execute every 60 seconds. Expire in 15 seconds if failed to start.
+    'remove-instance': {
+        'task': 'config.celery_app.delete_outdated_files',
+        'schedule': 60.0,
+        'options': {
+            'expires': 15.0
+        }
+    }
+}
