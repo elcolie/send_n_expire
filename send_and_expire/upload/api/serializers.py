@@ -28,15 +28,18 @@ class UploadSerializer(serializers.ModelSerializer):
             'created_by',
             'download_url',
             'delete_url',
+            'original_name',
         ]
         extra_kwargs = {
             'password': {'write_only': True},
             'download_url': {'read_only': True},
             'delete_url': {'read_only': True},
+            'original_name': {'read_only': True},
         }
 
     def create(self, validated_data: typ.Dict) -> Upload:
-        instance = super().create(validated_data)
+        instance: Upload = super().create(validated_data)
+        instance.original_name = validated_data.get("file").name
         instance.download_url = str(uuid.uuid4())
         instance.delete_url = str(uuid.uuid4())
         instance.save()
@@ -61,4 +64,5 @@ class ListSerializer(serializers.ModelSerializer):
             'expire_date',
             'download_url',
             'delete_url',
+            'original_name',
         ]

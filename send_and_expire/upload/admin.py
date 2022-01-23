@@ -7,6 +7,7 @@ class UploadAdmin(admin.ModelAdmin):
     __basic_fields = [
         'id',
         'file',
+        'password',
         'max_downloads',
         'expire_date',
         'created_by',

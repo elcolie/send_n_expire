@@ -33,10 +33,11 @@ class TestUpload(TestCase):
             return client.post(url, data=data, format='multipart')
 
     def test_upload_file_created_by(self) -> None:
-        """Check that file is save with correct ownership."""
+        """Check that file is saved with correct ownership."""
         client = APIClient()
         client.force_authenticate(user=self.user_a)
-        with open('CAM01242.jpg', 'rb') as picture_file:
+        filename = 'CAM01242.jpg'
+        with open(filename, 'rb') as picture_file:
             data = {
                 'password': "ThisIsPassword",
                 'max_downloads': 100,
@@ -51,6 +52,7 @@ class TestUpload(TestCase):
             instance: Upload = Upload.objects.first()
             self.assertEqual(status.HTTP_201_CREATED, res.status_code)
             self.assertEqual(picture_file.read(), instance.file.read())
+            self.assertEqual(filename, instance.original_name)
             self.assertEqual(self.user_a, instance.created_by)
             self.assertEqual(datetime(2013, 1, 29, 12, 34, 56, tzinfo=timezone.utc), instance.expire_date)
             self.assertIsNotNone(instance.download_url)

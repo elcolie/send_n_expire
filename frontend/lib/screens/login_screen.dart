@@ -62,9 +62,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         print("cleaned token: " + cleanedToken["token"]);
                         prefs.setString('jwt', cleanedToken["token"]);
                         print("Write jwt token to disk");
-                        Navigator.pushNamed(context, ListFileScreen.routeName);
+                        Navigator.of(context).pushNamed(ListFileScreen.routeName);
                       } else {
-                        Navigator.pushNamed(context, ErrorScreen.routeName);
+                        Navigator.of(context).pushNamed(ErrorScreen.routeName);
                       }
                     },
                     child: Text('Login')),

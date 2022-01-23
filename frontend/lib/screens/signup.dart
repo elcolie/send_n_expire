@@ -4,6 +4,7 @@ import 'package:frontend/backend_requests/signup.dart';
 
 import 'error_screen.dart';
 import 'finish_signup.dart';
+import 'login_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   static const String routeName = '/signup';
@@ -92,10 +93,10 @@ class _SignupScreenState extends State<SignupScreen> {
                     http.Response response = await postSignup(payload);
                     print(response.statusCode);
                     if(response.statusCode == 201){
-                      Navigator.pushNamed(context, FinishSignupScreen.routeName);
+                      Navigator.of(context).pushNamed(LoginScreen.routeName);
                     }else{
                       print(response.body);
-                      Navigator.pushNamed(context, ErrorScreen.routeName);
+                      Navigator.of(context).pushNamed(ErrorScreen.routeName);
                     }
                   },
                   child: Text('submit'),

@@ -15,6 +15,7 @@ class Upload(models.Model):
 
     download_url = models.SlugField(max_length=255, unique=True)
     delete_url = models.SlugField(max_length=255, unique=True)
+    original_name = models.CharField(max_length=255)
 
     def get_absolute_url(self):
         return reverse("download", args=(self.id,))

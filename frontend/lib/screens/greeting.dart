@@ -6,7 +6,7 @@ import 'package:frontend/screens/signup.dart';
 import 'login_screen.dart';
 
 class GreetingScreen extends StatelessWidget {
-  static const String routeName = '/greeting';
+  static const String routeName = '/';
 
   const GreetingScreen({Key? key}) : super(key: key);
 
@@ -18,7 +18,8 @@ class GreetingScreen extends StatelessWidget {
     } else {
       print("jwt toekn: " + value);
       print("Ready to go ${UploadScreen.routeName}");
-      Navigator.pushNamed(context, UploadScreen.routeName);
+      // Navigator.pushNamed(context, UploadScreen.routeName);
+      Navigator.of(context).pushNamed(UploadScreen.routeName);
     }
   }
 
@@ -33,7 +34,7 @@ class GreetingScreen extends StatelessWidget {
             children: [
               TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, SignupScreen.routeName);
+                  Navigator.of(context).pushNamed(SignupScreen.routeName);
                 },
                 child: Text("Signup"),
               ),
@@ -42,7 +43,7 @@ class GreetingScreen extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, LoginScreen.routeName);
+                  Navigator.of(context).pushNamed(LoginScreen.routeName);
                 },
                 child: Text("Login"),
               )

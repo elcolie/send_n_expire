@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/upload_screen.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 import '../backend_requests/delete_upload.dart';
 import '../backend_requests/list_files.dart';
+import '../constants.dart';
 import '../models/upload_model.dart';
+import 'enter_password.dart';
 
 class ListFileScreen extends StatefulWidget {
   static const String routeName = '/list-files';
@@ -33,6 +35,7 @@ class _ListFileScreenState extends State<ListFileScreen> {
         uploadResponseInstance['expire_date'],
         uploadResponseInstance['download_url'],
         uploadResponseInstance['delete_url'],
+        uploadResponseInstance['original_name'],
       ));
     });
     print('_uploads.length: ${uploads.length}');
@@ -41,17 +44,38 @@ class _ListFileScreenState extends State<ListFileScreen> {
     });
   }
 
+  void _launchURLBrowser(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   List<Widget> renderUploadList() {
     List<Widget> widgetHolders = [];
     for (int i = 0; i < _uploads.length; i++) {
       widgetHolders.add(Row(
         children: [
-          Text(_uploads[i].file),
+          Text(_uploads[i].originalName),
           SizedBox(
             width: 20.0,
           ),
-          TextButton(onPressed: null, child: Text("Download")),
-          SizedBox(width: 40.0),
+          ElevatedButton(
+            child: _uploads[i].password != null ? Text("Enter Password to download") : Text("Download"),
+            onPressed: (){
+              if(_uploads[i].password != null){
+                Navigator.of(context).pushNamed(EnterPasswordScreen.routeName, arguments: FilePassword(_uploads[i].file, _uploads[i].password!));
+                // Navigator.pushNamed(
+                //     context,
+                //     EnterPasswordScreen.routeName,
+                //     arguments: {'password': _uploads[i].password});
+              }else{
+                _launchURLBrowser(backendUrl + '/api/downloads/' + _uploads[i].downloadUrl);
+                print(_uploads[i].downloadUrl);
+              }
+            }
+          ),
           TextButton(
             child: Text("Delete"),
             onPressed: () {

@@ -1,6 +1,7 @@
 import logging
 
 from django.db.models import QuerySet
+from django.http import FileResponse
 from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -39,6 +40,7 @@ class DownloadViewSet(mixins.RetrieveModelMixin,
     Example:
     http://localhost:8000/api/downloads/e0e99592-4ee2-4d63-bc1b-78c966d584d9/
     """
+    permission_classes = ()
     queryset = Upload.objects.all()
     serializer_class = DownloadSerializer
     lookup_field = 'download_url'
@@ -55,7 +57,12 @@ class DownloadViewSet(mixins.RetrieveModelMixin,
         else:
             instance.save()
             serializer = self.get_serializer(instance)
-            return Response(serializer.data)
+            response = FileResponse(
+                instance.file
+            ,status=status.HTTP_200_OK)
+            response['Content-Disposition'] = f'attachment; filename={instance.file.name}'
+            return response
+            # return Response(serializer.data)
 
 
 class ListUploadViewSet(mixins.ListModelMixin,
