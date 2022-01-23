@@ -1,10 +1,12 @@
 import logging
+
+from django.db.models import QuerySet
 from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.viewsets import GenericViewSet
 
-from send_and_expire.upload.api.serializers import UploadSerializer, DownloadSerializer
+from send_and_expire.upload.api.serializers import UploadSerializer, DownloadSerializer, ListSerializer
 from send_and_expire.upload.models import Upload
 
 logger = logging.getLogger(__name__)
@@ -56,6 +58,17 @@ class DownloadViewSet(mixins.RetrieveModelMixin,
             return Response(serializer.data)
 
 
+class ListUploadViewSet(mixins.ListModelMixin,
+                        GenericViewSet):
+    queryset = Upload.objects.all()
+    serializer_class = ListSerializer
+
+    def get_queryset(self) -> QuerySet:
+        return self.queryset.filter(
+            created_by=self.request.user
+        )
+
+
 class DeleteViewSet(mixins.DestroyModelMixin, GenericViewSet):
     """
     Delete the instance using delete_url.
@@ -65,3 +78,7 @@ class DeleteViewSet(mixins.DestroyModelMixin, GenericViewSet):
     queryset = Upload.objects.all()
     lookup_field = 'delete_url'
     lookup_url_kwarg = 'delete_url'
+
+    def perform_destroy(self, instance):
+        instance.file.delete()
+        instance.delete()

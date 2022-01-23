@@ -157,3 +157,14 @@ class TestUpload(TestCase):
 
         # Expect 1 instance expire and will be deleted
         self.assertEqual(1, queryset.count())
+
+    def test_list_upload_permission(self) -> None:
+        """Authenticated user will be able to list upload."""
+        client = APIClient()
+        client.force_authenticate(user=self.user_a)
+        non_auth_client = APIClient()
+        url = reverse('api:list-list')
+        res: Response = client.get(url)
+        non_auth_res: Response = non_auth_client.get(url)
+        self.assertEqual(status.HTTP_200_OK, res.status_code)
+        self.assertEqual(status.HTTP_403_FORBIDDEN, non_auth_res.status_code)

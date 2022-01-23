@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/upload_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:frontend/screens/signup.dart';
 
@@ -16,8 +17,8 @@ class GreetingScreen extends StatelessWidget {
       print("token is empty");
     } else {
       print("jwt toekn: " + value);
-      print("Ready to go");
-      // Navigator.pushNamed(context, BalanceScreen.routeName);
+      print("Ready to go ${UploadScreen.routeName}");
+      Navigator.pushNamed(context, UploadScreen.routeName);
     }
   }
 

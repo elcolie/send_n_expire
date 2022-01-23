@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/screens/error_screen.dart';
 import 'package:frontend/screens/finish_signup.dart';
 import 'package:frontend/screens/greeting.dart';
+import 'package:frontend/screens/list_file_screen.dart';
 import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/signup.dart';
 import 'package:frontend/screens/upload_screen.dart';
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Routes',
-      initialRoute: GreetingScreen.routeName,
+      initialRoute: LoginScreen.routeName,
       routes: {
         SignupScreen.routeName: (context) => const SignupScreen(),
         GreetingScreen.routeName: (context) => const GreetingScreen(),
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
         FinishSignupScreen.routeName: (context) => const FinishSignupScreen(),
         LoginScreen.routeName: (context) => const LoginScreen(),
         ErrorScreen.routeName: (context) => const ErrorScreen(),
+        ListFileScreen.routeName: (context) => const ListFileScreen(),
       }
     );
   }

@@ -50,3 +50,15 @@ class DownloadSerializer(serializers.ModelSerializer):
             'file',
         ]
 
+
+class ListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Upload
+        fields = [
+            'file',
+            'password',
+            'max_downloads',
+            'expire_date',
+            'download_url',
+            'delete_url',
+        ]

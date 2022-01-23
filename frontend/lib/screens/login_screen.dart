@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/upload_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../backend_requests/login_request.dart';
 import 'error_screen.dart';
+import 'list_file_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = '/login';
@@ -29,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text('Welcome to Beauty Coin system',
+                Text('Welcome to Send and Expire sytem',
                     style: TextStyle(fontSize: 20.0)),
                 TextField(
                   decoration: InputDecoration(
@@ -60,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         print("cleaned token: " + cleanedToken["token"]);
                         prefs.setString('jwt', cleanedToken["token"]);
                         print("Write jwt token to disk");
-                        // Navigator.pushNamed(context, BalanceScreen.routeName);
+                        Navigator.pushNamed(context, ListFileScreen.routeName);
                       } else {
                         Navigator.pushNamed(context, ErrorScreen.routeName);
                       }
