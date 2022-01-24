@@ -30,16 +30,8 @@ certificatesResolvers:
 
 http:
   routers:
-    flutter-secure-router:
-      rule: "Path(`/`)"
-      entryPoints:
-        - web-secure
-      service: flutter
-      tls:
-        certResolver: letsencrypt
-
     web-secure-router:
-      rule: "Path(`/api/*`) || Path(`/admin/*`)"
+      rule: "Host(`send-n-expire.link`) || Host(`www.send-n-expire.link`)"
       entryPoints:
         - web-secure
       middlewares:
@@ -50,7 +42,7 @@ http:
         certResolver: letsencrypt
 
     flower-secure-router:
-      rule: "Host(`www.send-n-expire.link`)"
+      rule: "Host(`send-n-expire.link`)"
       entryPoints:
         - flower
       service: flower
@@ -66,11 +58,6 @@ http:
         hostsProxyHeaders: ["X-CSRFToken"]
 
   services:
-    flutter:
-      loadBalancer:
-        servers:
-          - url: http://flutter:8080
-
     django:
       loadBalancer:
         servers:

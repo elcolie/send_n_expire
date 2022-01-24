@@ -6,6 +6,17 @@ volumes:
   production_traefik: {}
 
 services:
+  flutter:
+    build:
+      context: .
+      dockerfile: ./compose/local/flutter/Dockerfile
+    image: send_and_expire_flutter
+    container_name: send_and_expire_flutter
+    depends_on:
+      - django
+    ports:
+      - "8080:8080"
+
   django: &django
     build:
       context: .
