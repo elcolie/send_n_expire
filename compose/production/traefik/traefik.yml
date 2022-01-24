@@ -31,7 +31,7 @@ certificatesResolvers:
 http:
   routers:
     flutter-secure-router:
-      rule: "Path(`/`)"
+      rule: "PathPrefix(`/`) && Host(`www.updatafile.com`)"
       entryPoints:
         - web-secure
       service: flutter
@@ -39,7 +39,7 @@ http:
         certResolver: letsencrypt
 
     web-secure-router:
-      rule: "Path(`/api/*`) || Path(`/admin/*`)"
+      rule: "PathPrefix(`/api/`) || PathPrefix(`/admin/`) && Host(`www.updatafile.com`)"
       entryPoints:
         - web-secure
       middlewares:
@@ -50,7 +50,7 @@ http:
         certResolver: letsencrypt
 
     flower-secure-router:
-      rule: "Host(`www.send-n-expire.link`)"
+      rule: "Host(`flower.updatafile.com`)"
       entryPoints:
         - flower
       service: flower
