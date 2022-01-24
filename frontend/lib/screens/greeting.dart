@@ -3,6 +3,7 @@ import 'package:frontend/screens/upload_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:frontend/screens/signup.dart';
 
+import 'list_file_screen.dart';
 import 'login_screen.dart';
 
 class GreetingScreen extends StatelessWidget {
@@ -17,9 +18,8 @@ class GreetingScreen extends StatelessWidget {
       print("token is empty");
     } else {
       print("jwt toekn: " + value);
-      print("Ready to go ${UploadScreen.routeName}");
-      // Navigator.pushNamed(context, UploadScreen.routeName);
-      Navigator.of(context).pushNamed(UploadScreen.routeName);
+      print("Ready to go ${ListFileScreen.routeName}");
+      Navigator.of(context).pushNamed(ListFileScreen.routeName);
     }
   }
 
