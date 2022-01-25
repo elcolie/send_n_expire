@@ -19,6 +19,7 @@ class TestUpload(TestCase):
 
     def setUp(self) -> None:
         self.user_a = User.objects.create(username="sarit")
+        self.user_b = User.objects.create(username="elcolie")
 
     def _upload(self, client, max_downloads=100) -> Response:
         """Upload file."""
@@ -182,7 +183,7 @@ class TestUpload(TestCase):
         self.assertEqual(status.HTTP_204_NO_CONTENT, res.status_code)
         self.assertEqual(0, Upload.objects.count())
 
-    def test_delete_file_by_other(self) -> None:
+    def test_delete_file_by_anonymous(self) -> None:
         """Delete file by others."""
         client = APIClient()
         client.force_authenticate(user=self.user_a)
@@ -192,4 +193,18 @@ class TestUpload(TestCase):
         client_2 = APIClient()
         res = client_2.delete(url)
         self.assertEqual(status.HTTP_403_FORBIDDEN, res.status_code)
+        self.assertEqual(1, Upload.objects.count())
+
+    def test_delete_file_by_other_authorized_user(self) -> None:
+        """Delete file by others."""
+        client = APIClient()
+        client.force_authenticate(user=self.user_a)
+        self._upload(client)
+        instance: Upload = Upload.objects.first()
+        url = reverse('api:delete-detail', kwargs={'delete_url': instance.delete_url})
+
+        client_2 = APIClient()
+        client_2.force_authenticate(user=self.user_b)
+        res = client_2.delete(url)
+        self.assertEqual(status.HTTP_404_NOT_FOUND, res.status_code)
         self.assertEqual(1, Upload.objects.count())
