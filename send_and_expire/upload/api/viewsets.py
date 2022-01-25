@@ -50,13 +50,7 @@ class DownloadViewSet(mixins.RetrieveModelMixin,
         instance: Upload = self.get_object()
         if instance.password is not None:
             # Password is required here
-            logger.info("==================================================")
-            logger.info(kwargs)
-            logger.info(request.query_params)
             password = request.query_params.get('password')
-            logger.info(password)
-            logger.info("==================================================")
-            logger.info(instance.password)
             if password != instance.password:
                 return Response(
                     data={'message': "Password unmatched"},
@@ -75,7 +69,6 @@ class DownloadViewSet(mixins.RetrieveModelMixin,
             ,status=status.HTTP_200_OK)
             response['Content-Disposition'] = f'attachment; filename={instance.file.name}'
             return response
-            # return Response(serializer.data)
 
 
 class ListUploadViewSet(mixins.ListModelMixin,

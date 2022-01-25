@@ -52,7 +52,7 @@ class _EnterPasswordScreenState extends State<EnterPasswordScreen> {
               ),
               ElevatedButton(onPressed: (){
                 if(_isPasswordCorrect){
-                  _launchURLBrowser(widget._filePassword.file);
+                  _launchURLBrowser(widget._filePassword.file + '?password=$_isPasswordCorrect');
                 }else{
                   showDialog(
                     context: context,
