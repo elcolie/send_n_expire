@@ -67,7 +67,7 @@ class DownloadViewSet(mixins.RetrieveModelMixin,
             response = FileResponse(
                 instance.file
             ,status=status.HTTP_200_OK)
-            response['Content-Disposition'] = f'attachment; filename={instance.file.name}'
+            response['Content-Disposition'] = f'attachment; filename={instance.original_name}'
             return response
 
 
@@ -91,6 +91,9 @@ class DeleteViewSet(mixins.DestroyModelMixin, GenericViewSet):
     queryset = Upload.objects.all()
     lookup_field = 'delete_url'
     lookup_url_kwarg = 'delete_url'
+
+    def get_queryset(self) -> QuerySet:
+        return super().get_queryset().filter(created_by=self.request.user)
 
     def perform_destroy(self, instance):
         instance.file.delete()
