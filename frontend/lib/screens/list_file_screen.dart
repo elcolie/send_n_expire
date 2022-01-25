@@ -1,12 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/upload_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../backend_requests/delete_upload.dart';
 import '../backend_requests/list_files.dart';
 import '../constants.dart';
 import '../models/upload_model.dart';
 import 'enter_password.dart';
+import 'login_screen.dart';
 
 class ListFileScreen extends StatefulWidget {
   static const String routeName = '/list-files';
@@ -58,6 +60,10 @@ class _ListFileScreenState extends State<ListFileScreen> {
       widgetHolders.add(Row(
         children: [
           Text(_uploads[i].originalName),
+          SizedBox(width: 10,),
+          SelectableText(backendUrl + '/api/downloads/${_uploads[i].downloadUrl}'),
+          SizedBox(width: 10,),
+          SelectableText(backendUrl + '/api/deletes/${_uploads[i].deleteUrl}'),
           SizedBox(
             width: 20.0,
           ),
@@ -66,10 +72,6 @@ class _ListFileScreenState extends State<ListFileScreen> {
             onPressed: (){
               if(_uploads[i].password != null){
                 Navigator.of(context).pushNamed(EnterPasswordScreen.routeName, arguments: FilePassword(_uploads[i].file, _uploads[i].password!));
-                // Navigator.pushNamed(
-                //     context,
-                //     EnterPasswordScreen.routeName,
-                //     arguments: {'password': _uploads[i].password});
               }else{
                 _launchURLBrowser(backendUrl + '/api/downloads/' + _uploads[i].downloadUrl);
                 print(_uploads[i].downloadUrl);
@@ -92,8 +94,7 @@ class _ListFileScreenState extends State<ListFileScreen> {
                         onPressed: () async {
                           Response response = await deleteUpload(_uploads[i].deleteUrl);
                           print(response.statusCode);
-                          Navigator.pushNamed(
-                              context, ListFileScreen.routeName);
+                          Navigator.of(context).pushNamed(ListFileScreen.routeName);
                         },
                       ),
                     ],
@@ -126,9 +127,16 @@ class _ListFileScreenState extends State<ListFileScreen> {
           ElevatedButton(
             child: Text("Add"),
             onPressed: (){
-              Navigator.pushNamed(
-                context, UploadScreen.routeName);
+              Navigator.of(context).pushNamed(UploadScreen.routeName);
             },
+          ),
+          ElevatedButton(
+              child: Text('Logout'),
+              onPressed: () async {
+                final prefs = await SharedPreferences.getInstance();
+                prefs.remove('jwt');
+                Navigator.of(context).pushNamed(LoginScreen.routeName);
+              },
           )
         ],
       ),

@@ -62,8 +62,7 @@ class _UploadScreenState extends State<UploadScreen> {
       _password
     );
     print(response.statusCode);
-    Navigator.pushNamed(
-        context, ListFileScreen.routeName);
+    Navigator.of(context).pushNamed(ListFileScreen.routeName);
   }
 
   @override

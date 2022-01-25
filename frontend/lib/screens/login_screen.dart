@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text('Welcome to Send and Expire sytem',
+                Text('Welcome to Send and Expire system',
                     style: TextStyle(fontSize: 20.0)),
                 TextField(
                   decoration: InputDecoration(
