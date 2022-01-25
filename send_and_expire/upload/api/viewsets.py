@@ -2,9 +2,9 @@ import logging
 
 from django.db.models import QuerySet
 from django.http import FileResponse
-from rest_framework import viewsets, status, mixins
+from django.template.response import TemplateResponse
+from rest_framework import status, mixins
 from rest_framework.response import Response
-from rest_framework.settings import api_settings
 from rest_framework.viewsets import GenericViewSet
 
 from send_and_expire.upload.api.serializers import UploadSerializer, DownloadSerializer, ListSerializer
@@ -40,6 +40,7 @@ class DownloadViewSet(mixins.RetrieveModelMixin,
     Example:
     http://localhost:8000/api/downloads/e0e99592-4ee2-4d63-bc1b-78c966d584d9/
     """
+    authentication_classes = ()
     permission_classes = ()
     queryset = Upload.objects.all()
     serializer_class = DownloadSerializer
@@ -52,10 +53,7 @@ class DownloadViewSet(mixins.RetrieveModelMixin,
             # Password is required here
             password = request.query_params.get('password')
             if password != instance.password:
-                return Response(
-                    data={'message': "Password unmatched"},
-                    status=status.HTTP_401_UNAUTHORIZED
-                )
+                return TemplateResponse(request, 'enter_password_screen.html', {'download_url': instance.download_url})
         instance.max_downloads -= 1
         if instance.max_downloads == -1:
             instance.delete()
