@@ -48,6 +48,20 @@ class DownloadViewSet(mixins.RetrieveModelMixin,
 
     def retrieve(self, request, *args, **kwargs):
         instance: Upload = self.get_object()
+        if instance.password is not None:
+            # Password is required here
+            logger.info("==================================================")
+            logger.info(kwargs)
+            logger.info(request.query_params)
+            password = request.query_params.get('password')
+            logger.info(password)
+            logger.info("==================================================")
+            logger.info(instance.password)
+            if password != instance.password:
+                return Response(
+                    data={'message': "Password unmatched"},
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
         instance.max_downloads -= 1
         if instance.max_downloads == -1:
             instance.delete()
@@ -56,7 +70,6 @@ class DownloadViewSet(mixins.RetrieveModelMixin,
             }, status=status.HTTP_204_NO_CONTENT)
         else:
             instance.save()
-            serializer = self.get_serializer(instance)
             response = FileResponse(
                 instance.file
             ,status=status.HTTP_200_OK)
