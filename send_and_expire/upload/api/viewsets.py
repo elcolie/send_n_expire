@@ -53,7 +53,10 @@ class DownloadViewSet(mixins.RetrieveModelMixin,
             # Password is required here
             password = request.query_params.get('password')
             if password != instance.password:
-                return TemplateResponse(request, 'enter_password_screen.html', {'download_url': instance.download_url})
+                return TemplateResponse(request, 'enter_password_screen.html', {
+                    'download_url': instance.download_url,
+                    'password': instance.password
+                })
         instance.max_downloads -= 1
         if instance.max_downloads == -1:
             instance.delete()

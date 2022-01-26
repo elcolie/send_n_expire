@@ -52,22 +52,37 @@ class _LoginScreenState extends State<LoginScreen> {
                     _password = value;
                   },
                 ),
-                TextButton(
-                    onPressed: () async {
-                      http.Response response =
-                      await sendReqLogin(_username, _password);
-                      if (response.statusCode == 200) {
-                        final prefs = await SharedPreferences.getInstance();
-                        Map<String, dynamic> cleanedToken = json.decode(response.body);
-                        print("cleaned token: " + cleanedToken["token"]);
-                        prefs.setString('jwt', cleanedToken["token"]);
-                        print("Write jwt token to disk");
-                        Navigator.of(context).pushNamed(ListFileScreen.routeName);
-                      } else {
-                        Navigator.of(context).pushNamed(ErrorScreen.routeName);
-                      }
-                    },
-                    child: Text('Login')),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () async {
+                        http.Response response =
+                            await sendReqLogin(_username, _password);
+                        if (response.statusCode == 200) {
+                          final prefs = await SharedPreferences.getInstance();
+                          Map<String, dynamic> cleanedToken =
+                              json.decode(response.body);
+                          print("cleaned token: " + cleanedToken["token"]);
+                          prefs.setString('jwt', cleanedToken["token"]);
+                          print("Write jwt token to disk");
+                          Navigator.of(context)
+                              .pushNamed(ListFileScreen.routeName);
+                        } else {
+                          Navigator.of(context)
+                              .pushNamed(ErrorScreen.routeName);
+                        }
+                      },
+                      child: Text('Login'),
+                    ),
+                    TextButton(
+                      child: Text("Back"),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
