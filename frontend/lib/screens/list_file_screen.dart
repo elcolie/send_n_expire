@@ -57,54 +57,65 @@ class _ListFileScreenState extends State<ListFileScreen> {
   List<Widget> renderUploadList() {
     List<Widget> widgetHolders = [];
     for (int i = 0; i < _uploads.length; i++) {
-      widgetHolders.add(Row(
-        children: [
-          Text(_uploads[i].originalName),
-          SizedBox(width: 10,),
-          SelectableText(backendUrl + '/api/downloads/${_uploads[i].downloadUrl}'),
-          SizedBox(width: 10,),
-          SelectableText(backendUrl + '/api/deletes/${_uploads[i].deleteUrl}'),
-          SizedBox(
-            width: 20.0,
-          ),
-          ElevatedButton(
-            child: _uploads[i].password != null ? Text("Enter Password to download") : Text("Download"),
-            onPressed: (){
-              if(_uploads[i].password != null){
-                Navigator.of(context).pushNamed(EnterPasswordScreen.routeName, arguments: FilePassword(_uploads[i].file, _uploads[i].password!));
-              }else{
-                _launchURLBrowser(backendUrl + '/api/downloads/' + _uploads[i].downloadUrl);
-                print(_uploads[i].downloadUrl);
-              }
-            }
-          ),
-          TextButton(
-            child: Text("Delete"),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text("CONFIRM"),
-                    content:
-                        Text("You are going to delete ${_uploads[i].file}"),
-                    actions: <Widget>[
-                      TextButton(
-                        child: Text("OK"),
-                        onPressed: () async {
-                          Response response = await deleteUpload(_uploads[i].deleteUrl);
-                          print(response.statusCode);
-                          Navigator.of(context).pushNamed(ListFileScreen.routeName);
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-          ),
-        ],
-      ));
+      widgetHolders.add(
+        Row(
+          children: [
+            Text(_uploads[i].originalName),
+            Column(
+              children: [
+                SelectableText(
+                    backendUrl + '/api/downloads/${_uploads[i].downloadUrl}'),
+                SelectableText(
+                    backendUrl + '/api/deletes/${_uploads[i].deleteUrl}'),
+              ],
+            ),
+            ElevatedButton(
+                child: _uploads[i].password != null
+                    ? Text("Enter Password to download")
+                    : Text("Download"),
+                onPressed: () {
+                  if (_uploads[i].password != null) {
+                    Navigator.of(context).pushNamed(
+                        EnterPasswordScreen.routeName,
+                        arguments: FilePassword(
+                            _uploads[i].file, _uploads[i].password!));
+                  } else {
+                    _launchURLBrowser(backendUrl +
+                        '/api/downloads/' +
+                        _uploads[i].downloadUrl);
+                    print(_uploads[i].downloadUrl);
+                  }
+                }),
+            TextButton(
+              child: Text("Delete"),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text("CONFIRM"),
+                      content:
+                          Text("You are going to delete ${_uploads[i].file}"),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text("OK"),
+                          onPressed: () async {
+                            Response response =
+                                await deleteUpload(_uploads[i].deleteUrl);
+                            print(response.statusCode);
+                            Navigator.of(context)
+                                .pushNamed(ListFileScreen.routeName);
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+      );
     }
     print('widgetHolders.length: ${widgetHolders.length}');
     return widgetHolders;
@@ -126,17 +137,17 @@ class _ListFileScreenState extends State<ListFileScreen> {
           ),
           ElevatedButton(
             child: Text("Add"),
-            onPressed: (){
+            onPressed: () {
               Navigator.of(context).pushNamed(UploadScreen.routeName);
             },
           ),
           ElevatedButton(
-              child: Text('Logout'),
-              onPressed: () async {
-                final prefs = await SharedPreferences.getInstance();
-                prefs.remove('jwt');
-                Navigator.of(context).pushNamed(LoginScreen.routeName);
-              },
+            child: Text('Logout'),
+            onPressed: () async {
+              final prefs = await SharedPreferences.getInstance();
+              prefs.remove('jwt');
+              Navigator.of(context).pushNamed(LoginScreen.routeName);
+            },
           )
         ],
       ),
