@@ -302,7 +302,7 @@ SOCIALACCOUNT_FORMS = {"signup": "send_and_expire.users.forms.UserSocialSignupFo
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
-    "PAGE_SIZE": 10,
+    "PAGE_SIZE": 5,
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
@@ -322,7 +322,7 @@ SPECTACULAR_SETTINGS = {
     "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAdminUser"],
     "SERVERS": [
         {"url": "https://127.0.0.1:8000", "description": "Local Development server"},
-        {"url": "https://elcolie.com", "description": "Production server"},
+        {"url": "https://www.updatafile.com", "description": "Production server"},
     ],
 }
 # Your stuff...

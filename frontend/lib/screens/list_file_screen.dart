@@ -12,8 +12,9 @@ import 'login_screen.dart';
 
 class ListFileScreen extends StatefulWidget {
   static const String routeName = '/list-files';
+  String? _callingUrl;
 
-  const ListFileScreen({Key? key}) : super(key: key);
+  ListFileScreen(this._callingUrl);
 
   @override
   _ListFileScreenState createState() => _ListFileScreenState();
@@ -22,13 +23,14 @@ class ListFileScreen extends StatefulWidget {
 class _ListFileScreenState extends State<ListFileScreen> {
   Map? _responsePayload;
   List<Upload> _uploads = [];
+  String? previousUrl;
+  String? nextUrl;
 
   void listFiles() async {
     List<Upload> uploads = [];
-    Response response = await getList();
+    print('widget._callingUrl: ${widget._callingUrl}');
+    Response response = await getList(widget._callingUrl);
     _responsePayload = Map.from(response.data);
-    // print(_responsePayload!["count"]);
-    // print(_responsePayload!["results"]);
     _responsePayload!['results'].forEach((uploadResponseInstance) {
       uploads.add(Upload(
         uploadResponseInstance['file'],
@@ -43,6 +45,8 @@ class _ListFileScreenState extends State<ListFileScreen> {
     print('_uploads.length: ${uploads.length}');
     setState(() {
       _uploads = uploads;
+      previousUrl = _responsePayload!['previous'];
+      nextUrl = _responsePayload!['next'];
     });
   }
 
@@ -70,22 +74,21 @@ class _ListFileScreenState extends State<ListFileScreen> {
               ],
             ),
             ElevatedButton(
-                child: _uploads[i].password != null
-                    ? Text("Enter Password to download")
-                    : Text("Download"),
-                onPressed: () {
-                  if (_uploads[i].password != null) {
-                    Navigator.of(context).pushNamed(
-                        EnterPasswordScreen.routeName,
-                        arguments: FilePassword(
-                            _uploads[i].file, _uploads[i].password!));
-                  } else {
-                    _launchURLBrowser(backendUrl +
-                        '/api/downloads/' +
-                        _uploads[i].downloadUrl);
-                    print(_uploads[i].downloadUrl);
-                  }
-                }),
+              child: _uploads[i].password != null
+                  ? Text("Enter Password to download")
+                  : Text("Download"),
+              onPressed: () {
+                if (_uploads[i].password != null) {
+                  Navigator.of(context).pushNamed(EnterPasswordScreen.routeName,
+                      arguments: FilePassword(
+                          _uploads[i].file, _uploads[i].password!));
+                } else {
+                  _launchURLBrowser(
+                      backendUrl + '/api/downloads/' + _uploads[i].downloadUrl);
+                  print(_uploads[i].downloadUrl);
+                }
+              },
+            ),
             TextButton(
               child: Text("Delete"),
               onPressed: () {
@@ -121,6 +124,60 @@ class _ListFileScreenState extends State<ListFileScreen> {
     return widgetHolders;
   }
 
+  List<TableRow> listTableRows() {
+    List<TableRow> tableRowHolders = [];
+    for (int i = 0; i < _uploads.length; i++) {
+      tableRowHolders.add(TableRow(children: [
+        Text(_uploads[i].originalName),
+        SelectableText(
+            backendUrl + '/api/downloads/${_uploads[i].downloadUrl}'),
+        ElevatedButton(
+          child: _uploads[i].password != null
+              ? Text("Enter Password to download")
+              : Text("Download"),
+          onPressed: () {
+            if (_uploads[i].password != null) {
+              Navigator.of(context).pushNamed(EnterPasswordScreen.routeName,
+                  arguments:
+                      FilePassword(_uploads[i].file, _uploads[i].password!));
+            } else {
+              _launchURLBrowser(
+                  backendUrl + '/api/downloads/' + _uploads[i].downloadUrl);
+              print(_uploads[i].downloadUrl);
+            }
+          },
+        ),
+        TextButton(
+          child: Text("Delete"),
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text("CONFIRM"),
+                  content: Text("You are going to delete ${_uploads[i].file}"),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text("OK"),
+                      onPressed: () async {
+                        Response response =
+                            await deleteUpload(_uploads[i].deleteUrl);
+                        print(response.statusCode);
+                        Navigator.of(context)
+                            .pushNamed(ListFileScreen.routeName);
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        ),
+      ]));
+    }
+    return tableRowHolders;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -130,26 +187,58 @@ class _ListFileScreenState extends State<ListFileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Column(
-            children: renderUploadList(),
-          ),
-          ElevatedButton(
-            child: Text("Add"),
-            onPressed: () {
-              Navigator.of(context).pushNamed(UploadScreen.routeName);
-            },
-          ),
-          ElevatedButton(
-            child: Text('Logout'),
-            onPressed: () async {
-              final prefs = await SharedPreferences.getInstance();
-              prefs.remove('jwt');
-              Navigator.of(context).pushNamed(LoginScreen.routeName);
-            },
-          )
-        ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Table(
+                border: TableBorder.all(),
+                columnWidths: const <int, TableColumnWidth>{
+                  0: IntrinsicColumnWidth(),
+                  1: IntrinsicColumnWidth(),
+                  2: IntrinsicColumnWidth(),
+                  3: IntrinsicColumnWidth(),
+                  // 3: FixedColumnWidth(300),
+                },
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                children: listTableRows()),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  child: Text('Previous'),
+                  onPressed: previousUrl == null
+                      ? null
+                      : () => Navigator.of(context).pushNamed(
+                          ListFileScreen.routeName,
+                          arguments: previousUrl),
+                ),
+                TextButton(
+                    onPressed: nextUrl == null
+                        ? null
+                        : () => Navigator.of(context).pushNamed(
+                            ListFileScreen.routeName,
+                            arguments: nextUrl),
+                    child: Text('Next'))
+              ],
+            ),
+            ElevatedButton(
+              child: Text("Add"),
+              onPressed: () {
+                Navigator.of(context).pushNamed(UploadScreen.routeName);
+              },
+            ),
+            ElevatedButton(
+              child: Text('Logout'),
+              onPressed: () async {
+                final prefs = await SharedPreferences.getInstance();
+                prefs.remove('jwt');
+                Navigator.of(context).pushNamed(LoginScreen.routeName);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
