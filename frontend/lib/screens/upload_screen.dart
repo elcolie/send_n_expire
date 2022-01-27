@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -46,16 +49,34 @@ class _UploadScreenState extends State<UploadScreen> {
     print('UTC Now: $utcNow');
     var now = DateTime.now();
     print('Local Now: $now');
-
-    var sixDaysFromNow = utcNow.add(const Duration(days: 6));
-    print('sixDaysFromNow: $sixDaysFromNow');
-    var response = await uploadFile(
-        _picked!,
-        __downloadOptions[_currentMaxDownload]!,
-        _currentExpiryOption,
-        _password);
-    print(response.statusCode);
-    Navigator.of(context).pushNamed(ListFileScreen.routeName);
+    try{
+      var response = await uploadFile(
+          _picked!,
+          __downloadOptions[_currentMaxDownload]!,
+          _currentExpiryOption,
+          _password);
+      print(response.statusCode);
+    } on DioError catch (err){
+      if(err.response!.statusCode == 400){
+        Widget ok = ElevatedButton(
+          child: Text("Okay"),
+          onPressed: () {Navigator.of(context).pop();},
+        );
+        showDialog(
+            context: context,
+            builder: (BuildContext context){
+              return AlertDialog(
+                title: Text("Ouch!"),
+                content: Text(err.response!.data['file'][0]),
+                actions: [
+                  ok,
+                ],
+                elevation: 5,
+              );
+            }
+        );
+      }
+    }
   }
 
   @override

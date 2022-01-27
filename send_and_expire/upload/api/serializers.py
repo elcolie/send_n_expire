@@ -9,7 +9,7 @@ from django.conf import settings
 
 def file_size(value):
     if value.size > settings.UPLOAD_SIZE_LIMIT:
-        raise ValidationError("File too large. Size should not exceed 100 MiB")
+        raise ValidationError("File too large. Size should not exceed 100 MB")
 
 
 class UploadSerializer(serializers.ModelSerializer):
